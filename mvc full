@@ -1,0 +1,359 @@
+MvcPracticalAllInOne
+1️⃣ Software & Tools Required
+
+(Same style as Unit-IV)
+
+Visual Studio 2019 / 2022
+
+.NET Framework 4.8
+
+ASP.NET MVC (comes with Visual Studio)
+
+📌 No database required
+(All programs are logic-based MVC practicals as per PPT)
+
+2️⃣ Create MVC Project (STEP-BY-STEP)
+
+Open Visual Studio
+
+Click File → New → Project
+
+Select ASP.NET Web Application (.NET Framework)
+
+Click Next
+
+Project Name: MvcPracticalAllInOne
+
+Framework: .NET Framework 4.8
+
+Click Create
+
+Select MVC
+
+Click Create
+
+📌 Visual Studio automatically creates:
+
+Models
+
+Views
+
+Controllers
+
+3️⃣ Project Structure
+
+(Write this in practical)
+
+MvcPracticalAllInOne
+│
+├── Models
+│   ├── Student.cs
+│   ├── Marks.cs
+│   ├── Travel.cs
+│   ├── Sports.cs
+│   ├── Employee.cs
+│   ├── Patient.cs
+│   ├── Doctor.cs
+│   ├── Report.cs
+│
+├── Controllers
+│   └── HomeController.cs
+│
+├── Views
+│   └── Home
+│       ├── Index.cshtml
+│       ├── StudentResult.cshtml
+│       ├── TravelPlanner.cshtml
+│       ├── SportsSelection.cshtml
+│       ├── EmployeePay.cshtml
+│       ├── PatientReport.cshtml
+│       └── Result.cshtml
+
+4️⃣ MODELS (WITH COMMENTS + HOW TO CREATE)
+🔹 Student.cs
+
+How to create:
+Right-click Models → Add → Class → Name: Student.cs
+
+namespace MvcPracticalAllInOne.Models
+{
+    // Model class to store student details
+    public class Student
+    {
+        public int RollNo { get; set; }      // Student Roll Number
+        public string Name { get; set; }     // Student Name
+        public string ContactNo { get; set; }// Contact Number
+    }
+}
+
+🔹 Marks.cs
+
+How to create:
+Models → Add → Class → Marks.cs
+
+namespace MvcPracticalAllInOne.Models
+{
+    // Model class to store marks and result
+    public class Marks
+    {
+        public int Sub1 { get; set; }        // Subject 1 Marks
+        public int Sub2 { get; set; }        // Subject 2 Marks
+        public int Sub3 { get; set; }        // Subject 3 Marks
+        public int Total { get; set; }       // Total Marks
+        public double Percentage { get; set; } // Percentage
+        public string Result { get; set; }   // PASS / FAIL
+    }
+}
+
+🔹 Travel.cs (Checkbox Practical)
+
+How to create:
+Models → Add → Class → Travel.cs
+
+namespace MvcPracticalAllInOne.Models
+{
+    // Model for Travel Planner (Checkbox example)
+    public class Travel
+    {
+        public string TravellerName { get; set; } // Traveller name
+        public string Destination { get; set; }   // Destination
+        public string TravelMode { get; set; }    // Train / Bus / Flight
+
+        // Checkbox values
+        public bool Sightseeing { get; set; }
+        public bool Trekking { get; set; }
+        public bool Shopping { get; set; }
+
+        public int TotalCost { get; set; }        // Final calculated cost
+    }
+}
+
+🔹 Sports.cs (ListBox – Multi Select)
+
+How to create:
+Models → Add → Class → Sports.cs
+
+using System.Collections.Generic;
+
+namespace MvcPracticalAllInOne.Models
+{
+    // Model for Sports selection using ListBox
+    public class Sports
+    {
+        public int Stud_Id { get; set; }           // Student ID
+        public string Stud_Name { get; set; }      // Student Name
+        public List<string> Sport_Name { get; set; } // Selected sports
+    }
+}
+
+🔹 Employee.cs (Pay Slip)
+
+How to create:
+Models → Add → Class → Employee.cs
+
+using System.Collections.Generic;
+
+namespace MvcPracticalAllInOne.Models
+{
+    // Model for Employee Pay Slip
+    public class Employee
+    {
+        public string EmpName { get; set; }        // Employee Name
+        public string Department { get; set; }     // Department
+        public string Gender { get; set; }         // Gender
+        public List<string> Allowances { get; set; }// Selected allowances
+        public int TotalSalary { get; set; }       // Final salary
+    }
+}
+
+🔹 Patient.cs, Doctor.cs, Report.cs
+
+How to create:
+Models → Add → Class → Patient.cs, Doctor.cs, Report.cs
+
+namespace MvcPracticalAllInOne.Models
+{
+    // Patient details
+    public class Patient
+    {
+        public string Name { get; set; }
+        public int Age { get; set; }
+    }
+
+    // Doctor details
+    public class Doctor
+    {
+        public string Name { get; set; }
+        public string Specialization { get; set; }
+    }
+
+    // Medical report
+    public class Report
+    {
+        public int BP { get; set; }
+        public int Sugar { get; set; }
+        public string Result { get; set; } // Normal / Abnormal
+    }
+}
+
+5️⃣ CONTROLLER (WITH COMMENTS)
+📁 How to open
+
+Controllers → HomeController.cs
+
+using System.Web.Mvc;
+using MvcPracticalAllInOne.Models;
+
+namespace MvcPracticalAllInOne.Controllers
+{
+    // Main controller handling all practical programs
+    public class HomeController : Controller
+    {
+        // Menu page
+        public ActionResult Index()
+        {
+            return View();
+        }
+
+        // ---------------- STUDENT RESULT ----------------
+        public ActionResult StudentResult()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult StudentResult(Student s, Marks m)
+        {
+            // Calculate total and percentage
+            m.Total = m.Sub1 + m.Sub2 + m.Sub3;
+            m.Percentage = m.Total / 3.0;
+
+            // Pass / Fail condition
+            m.Result = (m.Sub1 >= 35 && m.Sub2 >= 35 && m.Sub3 >= 35)
+                        ? "PASS" : "FAIL";
+
+            ViewBag.Student = s;
+            ViewBag.Marks = m;
+            return View("Result");
+        }
+
+        // ---------------- TRAVEL PLANNER ----------------
+        public ActionResult TravelPlanner()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult TravelPlanner(Travel t)
+        {
+            // Travel mode cost
+            int cost = t.TravelMode == "Flight" ? 5000 :
+                       t.TravelMode == "Train" ? 2000 : 1000;
+
+            // Add checkbox costs
+            if (t.Sightseeing) cost += 500;
+            if (t.Trekking) cost += 500;
+            if (t.Shopping) cost += 500;
+
+            t.TotalCost = cost;
+            return View("Result", t);
+        }
+
+        // ---------------- SPORTS SELECTION ----------------
+        public ActionResult SportsSelection()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult SportsSelection(Sports s)
+        {
+            return View("Result", s);
+        }
+
+        // ---------------- EMPLOYEE PAY ----------------
+        public ActionResult EmployeePay()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult EmployeePay(Employee e)
+        {
+            int basic = 10000;
+            e.TotalSalary = basic + (e.Allowances.Count * 1000);
+            return View("Result", e);
+        }
+
+        // ---------------- PATIENT REPORT ----------------
+        public ActionResult PatientReport()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult PatientReport(Patient p, Doctor d, Report r)
+        {
+            // Diagnosis logic
+            r.Result = (r.BP > 140 || r.Sugar > 140)
+                        ? "Abnormal" : "Normal";
+
+            ViewBag.Patient = p;
+            ViewBag.Doctor = d;
+            ViewBag.Report = r;
+
+            return View("Result");
+        }
+    }
+}
+
+6️⃣ VIEWS (WITH COMMENTS)
+🔹 Index.cshtml (MENU PAGE)
+
+How to create:
+Views → Home → Add → View → Name: Index
+
+<!-- Menu page to navigate all MVC practical programs -->
+<h2>MVC Practical Programs</h2>
+
+<ul>
+    <li>@Html.ActionLink("Student Result", "StudentResult")</li>
+    <li>@Html.ActionLink("Travel Planner", "TravelPlanner")</li>
+    <li>@Html.ActionLink("Sports Selection", "SportsSelection")</li>
+    <li>@Html.ActionLink("Employee Pay Slip", "EmployeePay")</li>
+    <li>@Html.ActionLink("Patient Report", "PatientReport")</li>
+</ul>
+
+🔹 Result.cshtml (COMMON RESULT PAGE)
+
+How to create:
+Views → Home → Add → View → Name: Result
+
+<h2>Result</h2>
+
+<!-- Student Result -->
+@if (ViewBag.Student != null)
+{
+    <p>Name: @ViewBag.Student.Name</p>
+    <p>Total: @ViewBag.Marks.Total</p>
+    <p>Percentage: @ViewBag.Marks.Percentage</p>
+    <p>Result: @ViewBag.Marks.Result</p>
+}
+
+<!-- Travel Result -->
+@if (Model is MvcPracticalAllInOne.Models.Travel)
+{
+    <p>Total Travel Cost: @Model.TotalCost</p>
+}
+
+<!-- Employee Salary -->
+@if (Model is MvcPracticalAllInOne.Models.Employee)
+{
+    <p>Total Salary: @Model.TotalSalary</p>
+}
+
+<!-- Patient Diagnosis -->
+@if (ViewBag.Report != null)
+{
+    <p>Diagnosis Result: @ViewBag.Report.Result</p>
+}

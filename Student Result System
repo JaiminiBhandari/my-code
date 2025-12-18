@@ -1,0 +1,272 @@
+📘 UNIT – V : MVC .NET (MVC Framework)
+Assignment Question 11 – Student Result System
+🔴 ORIGINAL QUESTION (UNCHANGED)
+Create the following using MVC:
+Classes
+
+Student
+
+RollNo
+
+Name
+
+ContactNo
+
+Marks
+
+RollNo
+
+Sub1_Marks
+
+Sub2_Marks
+
+Sub3_Marks
+
+Total
+
+Percentage
+
+Logic
+
+Marks out of 100
+
+Minimum 35 marks in each subject
+
+Calculate:
+
+Total
+
+Percentage
+
+Display Pass / Fail
+
+1️⃣ What is MVC? (WRITE IN EXAM)
+
+MVC = Model – View – Controller
+
+Part	Work
+Model	Holds data & business logic
+View	UI (HTML + Razor)
+Controller	Handles input & connects Model and View
+
+📌 MVC improves:
+
+Separation of concerns
+
+Maintainability
+
+Reusability
+
+Testability
+
+2️⃣ Create MVC Project (STEP-BY-STEP)
+
+Open Visual Studio
+
+File → New → Project
+
+Select ASP.NET Web Application (.NET Framework)
+
+Project Name: StudentResultMVC
+
+Framework: .NET Framework 4.8
+
+Click OK
+
+Select MVC
+
+Click Create
+
+📌 Visual Studio automatically creates:
+
+Models folder
+
+Views folder
+
+Controllers folder
+
+3️⃣ Create MODEL Classes
+🔹 3.1 Student Model
+
+📁 Models → Add → Class → Student.cs
+
+using System.ComponentModel.DataAnnotations;
+
+namespace StudentResultMVC.Models
+{
+    public class Student
+    {
+        [Required]
+        public int RollNo { get; set; }
+
+        [Required]
+        public string Name { get; set; }
+
+        [Required]
+        public string ContactNo { get; set; }
+    }
+}
+
+
+📌 Purpose: Stores student details
+📌 Required enables ModelState.IsValid
+
+🔹 3.2 Marks Model
+
+📁 Models → Add → Class → Marks.cs
+
+using System.ComponentModel.DataAnnotations;
+
+namespace StudentResultMVC.Models
+{
+    public class Marks
+    {
+        public int RollNo { get; set; }
+
+        [Range(0, 100)]
+        public int Sub1_Marks { get; set; }
+
+        [Range(0, 100)]
+        public int Sub2_Marks { get; set; }
+
+        [Range(0, 100)]
+        public int Sub3_Marks { get; set; }
+
+        public int Total { get; set; }
+        public double Percentage { get; set; }
+        public string Result { get; set; }
+    }
+}
+
+4️⃣ Create VIEW MODEL (Combine Student + Marks)
+
+📁 Models → Add → Class → StudentResultVM.cs
+
+namespace StudentResultMVC.Models
+{
+    public class StudentResultVM
+    {
+        public Student Student { get; set; }
+        public Marks Marks { get; set; }
+    }
+}
+
+
+📌 Why ViewModel?
+To send multiple models to a single view.
+
+5️⃣ Create CONTROLLER
+
+📁 Controllers → HomeController.cs
+
+using System.Web.Mvc;
+using StudentResultMVC.Models;
+
+namespace StudentResultMVC.Controllers
+{
+    public class HomeController : Controller
+    {
+        // GET: Input page
+        public ActionResult Index()
+        {
+            return View();
+        }
+
+        // POST: Form submission
+        [HttpPost]
+        public ActionResult Index(StudentResultVM vm)
+        {
+            // Validation check
+            if (!ModelState.IsValid)
+            {
+                return View(vm);
+            }
+
+            // Calculate total
+            vm.Marks.Total =
+                vm.Marks.Sub1_Marks +
+                vm.Marks.Sub2_Marks +
+                vm.Marks.Sub3_Marks;
+
+            // Calculate percentage
+            vm.Marks.Percentage = vm.Marks.Total / 3.0;
+
+            // Pass/Fail logic
+            if (vm.Marks.Sub1_Marks >= 35 &&
+                vm.Marks.Sub2_Marks >= 35 &&
+                vm.Marks.Sub3_Marks >= 35)
+                vm.Marks.Result = "PASS";
+            else
+                vm.Marks.Result = "FAIL";
+
+            // Redirect to result page
+            return View("Result", vm);
+        }
+    }
+}
+
+
+📌 Controller flow:
+
+User input → Controller → Model logic → View
+
+6️⃣ Create VIEW – Input Page
+
+📁 Views → Home → Index.cshtml
+
+@model StudentResultMVC.Models.StudentResultVM
+
+<h2>Enter Student Result</h2>
+
+@using (Html.BeginForm())
+{
+    <h3>Student Details</h3>
+
+    <p>Roll No: @Html.TextBoxFor(m => m.Student.RollNo)</p>
+    <p>Name: @Html.TextBoxFor(m => m.Student.Name)</p>
+    <p>Contact No: @Html.TextBoxFor(m => m.Student.ContactNo)</p>
+
+    <h3>Marks</h3>
+
+    <p>Subject 1: @Html.TextBoxFor(m => m.Marks.Sub1_Marks)</p>
+    <p>Subject 2: @Html.TextBoxFor(m => m.Marks.Sub2_Marks)</p>
+    <p>Subject 3: @Html.TextBoxFor(m => m.Marks.Sub3_Marks)</p>
+
+    <input type="submit" value="Calculate Result" />
+}
+
+
+📌 Html.BeginForm()
+
+Creates <form>
+
+Posts data to HomeController → Index (POST)
+
+7️⃣ Create VIEW – Result Page
+
+📁 Views → Home → Result.cshtml
+
+@model StudentResultMVC.Models.StudentResultVM
+
+<h2>Student Result</h2>
+
+<p>Roll No: @Model.Student.RollNo</p>
+<p>Name: @Model.Student.Name</p>
+<p>Contact: @Model.Student.ContactNo</p>
+
+<p>Total Marks: @Model.Marks.Total</p>
+<p>Percentage: @Model.Marks.Percentage</p>
+<p>Result: <b>@Model.Marks.Result</b></p>
+
+8️⃣ How Data Flows (VERY IMPORTANT FOR VIVA)
+User fills form
+     ↓
+Index.cshtml (View)
+     ↓
+HomeController Index (POST)
+     ↓
+ModelState.IsValid
+     ↓
+Business Logic (Total, Percentage, Pass/Fail)
+     ↓
+Result.cshtml (View)

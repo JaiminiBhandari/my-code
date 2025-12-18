@@ -1,0 +1,281 @@
+Assignment Question 12 – Patient–Doctor–Report System
+🔴 ORIGINAL QUESTION (UNCHANGED)
+Create the following using MVC:
+Classes
+
+Patient
+
+PatientId
+
+Name
+
+Age
+
+Doctor
+
+DoctorId
+
+Name
+
+Specialization
+
+Report
+
+PatientId
+
+DoctorId
+
+BP
+
+Sugar
+
+Result
+
+Logic / Processing
+
+If BP > 140 OR Sugar > 140
+→ Result = “Abnormal”
+
+Else
+→ Result = “Normal”
+
+Output
+
+Display:
+
+Patient Name
+
+Doctor Name
+
+Diagnosis Result
+
+1️⃣ MVC REVISION (WRITE IN EXAM)
+
+MVC = Model – View – Controller
+
+Part	Responsibility
+Model	Data & business logic
+View	UI (HTML + Razor)
+Controller	Handles input & connects Model & View
+
+📌 MVC provides:
+
+Separation of Concerns
+
+Maintainability
+
+Reusability
+
+Testability
+
+2️⃣ Create MVC Project (STEP-BY-STEP)
+
+Open Visual Studio
+
+File → New → Project
+
+Select ASP.NET Web Application (.NET Framework)
+
+Project Name: PatientDoctorMVC
+
+Framework: .NET Framework 4.8
+
+Click OK
+
+Select MVC
+
+Click Create
+
+📌 Default folders created:
+
+Models
+
+Views
+
+Controllers
+
+3️⃣ Create MODEL Classes
+🔹 3.1 Patient Model
+
+📁 Models → Add → Class → Patient.cs
+
+using System.ComponentModel.DataAnnotations;
+
+namespace PatientDoctorMVC.Models
+{
+    public class Patient
+    {
+        [Required]
+        public int PatientId { get; set; }
+
+        [Required]
+        public string Name { get; set; }
+
+        [Required]
+        public int Age { get; set; }
+    }
+}
+
+🔹 3.2 Doctor Model
+
+📁 Models → Add → Class → Doctor.cs
+
+using System.ComponentModel.DataAnnotations;
+
+namespace PatientDoctorMVC.Models
+{
+    public class Doctor
+    {
+        [Required]
+        public int DoctorId { get; set; }
+
+        [Required]
+        public string Name { get; set; }
+
+        [Required]
+        public string Specialization { get; set; }
+    }
+}
+
+🔹 3.3 Report Model
+
+📁 Models → Add → Class → Report.cs
+
+using System.ComponentModel.DataAnnotations;
+
+namespace PatientDoctorMVC.Models
+{
+    public class Report
+    {
+        public int PatientId { get; set; }
+        public int DoctorId { get; set; }
+
+        public int BP { get; set; }
+        public int Sugar { get; set; }
+
+        public string Result { get; set; }
+    }
+}
+
+4️⃣ Create VIEW MODEL (IMPORTANT)
+
+📁 Models → Add → Class → PatientReportVM.cs
+
+namespace PatientDoctorMVC.Models
+{
+    public class PatientReportVM
+    {
+        public Patient Patient { get; set; }
+        public Doctor Doctor { get; set; }
+        public Report Report { get; set; }
+    }
+}
+
+
+📌 Why ViewModel?
+Because multiple classes are required in one View.
+
+5️⃣ Create CONTROLLER
+
+📁 Controllers → HomeController.cs
+
+using System.Web.Mvc;
+using PatientDoctorMVC.Models;
+
+namespace PatientDoctorMVC.Controllers
+{
+    public class HomeController : Controller
+    {
+        // GET: Input page
+        public ActionResult Index()
+        {
+            return View();
+        }
+
+        // POST: Form submission
+        [HttpPost]
+        public ActionResult Index(PatientReportVM vm)
+        {
+            // Validation check
+            if (!ModelState.IsValid)
+            {
+                return View(vm);
+            }
+
+            // Diagnosis logic
+            if (vm.Report.BP > 140 || vm.Report.Sugar > 140)
+                vm.Report.Result = "Abnormal";
+            else
+                vm.Report.Result = "Normal";
+
+            // Send data to Result view
+            return View("Result", vm);
+        }
+    }
+}
+
+
+📌 Controller handles business logic
+📌 View only displays output
+
+6️⃣ Create VIEW – Input Page
+
+📁 Views → Home → Index.cshtml
+
+@model PatientDoctorMVC.Models.PatientReportVM
+
+<h2>Patient Diagnosis Form</h2>
+
+@using (Html.BeginForm())
+{
+    <h3>Patient Details</h3>
+
+    <p>Patient ID: @Html.TextBoxFor(m => m.Patient.PatientId)</p>
+    <p>Name: @Html.TextBoxFor(m => m.Patient.Name)</p>
+    <p>Age: @Html.TextBoxFor(m => m.Patient.Age)</p>
+
+    <h3>Doctor Details</h3>
+
+    <p>Doctor ID: @Html.TextBoxFor(m => m.Doctor.DoctorId)</p>
+    <p>Name: @Html.TextBoxFor(m => m.Doctor.Name)</p>
+    <p>Specialization: @Html.TextBoxFor(m => m.Doctor.Specialization)</p>
+
+    <h3>Health Readings</h3>
+
+    <p>BP: @Html.TextBoxFor(m => m.Report.BP)</p>
+    <p>Sugar: @Html.TextBoxFor(m => m.Report.Sugar)</p>
+
+    <input type="submit" value="Check Diagnosis" />
+}
+
+
+📌 Html.BeginForm()
+
+Creates <form>
+
+Sends data to HomeController → Index (POST)
+
+7️⃣ Create VIEW – Result Page
+
+📁 Views → Home → Result.cshtml
+
+@model PatientDoctorMVC.Models.PatientReportVM
+
+<h2>Diagnosis Report</h2>
+
+<p><b>Patient Name:</b> @Model.Patient.Name</p>
+<p><b>Doctor Name:</b> @Model.Doctor.Name</p>
+<p><b>Specialization:</b> @Model.Doctor.Specialization</p>
+
+<p><b>Diagnosis Result:</b> @Model.Report.Result</p>
+
+8️⃣ Data Flow (VERY IMPORTANT FOR VIVA)
+User enters data
+     ↓
+Index.cshtml (View)
+     ↓
+HomeController Index (POST)
+     ↓
+Business Logic (BP / Sugar check)
+     ↓
+Result.cshtml (View)
